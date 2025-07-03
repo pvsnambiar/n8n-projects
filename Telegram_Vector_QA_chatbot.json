@@ -10,17 +10,16 @@
         -40
       ],
       "id": "c8d44f64-bb8c-439d-957b-cff9a27ff1b5",
-      "name": "When clicking ‘Execute workflow’"
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
     },
     {
       "parameters": {
         "operation": "download",
         "fileId": {
           "__rl": true,
-          "value": "1pEgyh0DuHZLnpZGTy0JOQd7JRlSvzuxi",
-          "mode": "list",
-          "cachedResultName": "HR-Guide_-Policy-and-Procedure-Template.pdf",
-          "cachedResultUrl": "https://drive.google.com/file/d/1pEgyh0DuHZLnpZGTy0JOQd7JRlSvzuxi/view?usp=drivesdk"
+          "value": "={{ $json.id }}",
+          "mode": "id"
         },
         "options": {}
       },
@@ -108,8 +107,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        260,
-        280
+        -60,
+        420
       ],
       "id": "8fea1705-df39-4fca-bb4c-582f0e48ac5c",
       "name": "Recursive Character Text Splitter"
@@ -387,6 +386,41 @@
           "name": "voice_trigger"
         }
       }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1FHMsYjnQdGO7BWkfj7mVV_SP3kgY1mVI",
+          "mode": "list",
+          "cachedResultName": "Chatbot",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1FHMsYjnQdGO7BWkfj7mVV_SP3kgY1mVI"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        300
+      ],
+      "id": "0d0bb506-ca0c-41b6-80a7-04ef61d4dcd9",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "l1EeSQaEY25ApHQn",
+          "name": "Google Drive account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -562,13 +596,24 @@
           }
         ]
       ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "dc194d5e-d71d-40c4-ab66-8d6e9834f603",
+  "versionId": "136ab4d4-0a72-41c0-ba63-19b61d7bc6e8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "785b50de3b97837403db1eda6f5bf37474323db6ff6c26cf750509896c53a5c2"
