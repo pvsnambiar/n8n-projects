@@ -1,0 +1,539 @@
+{
+  "name": "Translate_hindi_english",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -760,
+        -20
+      ],
+      "id": "d4cf6d7e-6bf7-40e1-a464-50f285d90535",
+      "name": "Telegram Trigger",
+      "webhookId": "aae2bda4-5071-4fe7-bd35-c01b9b09c524",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "c93d01b2-bafb-4a80-91bb-3d9a94b6fcb6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "32821c5e-a459-4107-a361-ca5398e7bad8",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.photo[1].file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -320,
+        -20
+      ],
+      "id": "54e38921-fa3e-4ce0-a6dd-226f5128ccc6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "21bdbdc9-5272-41fc-97c5-b5e36d319683",
+              "name": "language_native",
+              "value": "english",
+              "type": "string"
+            },
+            {
+              "id": "904821e9-2ce7-4d8d-b773-54e5c3f41de0",
+              "name": "language_translate",
+              "value": "hindi",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -540,
+        -20
+      ],
+      "id": "cdb97a51-53dd-4e88-9836-5b689bdb6ff8",
+      "name": "settings"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        -180
+      ],
+      "id": "ece12802-b377-4958-a1a4-54500759c73b",
+      "name": "Get a file",
+      "webhookId": "9c864612-27b0-4661-b2f3-bcb8b8a33777",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        100,
+        -180
+      ],
+      "id": "66b344f9-3ded-4047-9386-50f213726c99",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "qVet70zxm0dcmUf2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -40
+      ],
+      "id": "aa08bd88-539d-4519-bf78-95b8ebef06f6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "qVet70zxm0dcmUf2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        680,
+        -180
+      ],
+      "id": "4170fde9-7541-4076-9b36-fcb04807ad94",
+      "name": "Generate audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "qVet70zxm0dcmUf2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        980,
+        -300
+      ],
+      "id": "991785fa-1c36-4753-b34d-be567a08046e",
+      "name": "Send an audio file",
+      "webhookId": "50329df4-057c-4972-a1f3-1d5f578053ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Translate').item.json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        980,
+        -120
+      ],
+      "id": "2d93fda6-8f60-43d4-9678-438a45955291",
+      "name": "Send a text message",
+      "webhookId": "4f9fe4bd-df28-4d8e-a097-7212f69ee90f",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[1].file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        140
+      ],
+      "id": "c414040e-0a61-4a6b-9146-b9d146eda18b",
+      "name": "Get a file1",
+      "webhookId": "9c864612-27b0-4661-b2f3-bcb8b8a33777",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        300
+      ],
+      "id": "0b6f005f-a798-4421-a8a8-842b8c0294e2",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "qVet70zxm0dcmUf2",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  if (item.binary && item.binary.data) {\n    const fileName = item.binary.data.fileName || '';\n\n    // Correct the MIME type based on the file extension\n    if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {\n      item.binary.data.mimeType = 'image/jpeg';\n    } else if (fileName.endsWith('.png')) {\n      item.binary.data.mimeType = 'image/png';\n    } else {\n      throw new Error('Unsupported file format: ' + fileName);\n    }\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        140
+      ],
+      "id": "66edb9ac-038a-44f8-9330-0c36c7c71285",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Detect the language of the text that follows.\n- If it is {{ $('settings').item.json.language_native }} translate to {{ $('settings').item.json.language_translate }}\n- If it is {{ $('settings').item.json.language_translate }} translate to {{ $('settings').item.json.language_native }}.\n- In the output just provide the translation and do not explain it. Just provide the translation without anything else.\n\nText:\n{{ $json.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        320,
+        -180
+      ],
+      "id": "310f1a1c-4800-4d1a-8174-c2e814acff65",
+      "name": "Translate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Translate to  {{ $('settings').item.json.language_native }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "messageType": "imageBinary"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        340,
+        140
+      ],
+      "id": "27c7a9f7-7e6f-4e32-b13d-ebdb2a9eb6b3",
+      "name": "ImageTranslate"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        80
+      ],
+      "id": "1e27fddc-5fa8-4c0d-81b4-805644611126",
+      "name": "Send a text message1",
+      "webhookId": "6945bfa2-dd64-45b7-ad42-ab54119a3723",
+      "credentials": {
+        "telegramApi": {
+          "id": "U8CMEOUEchRHFAmZ",
+          "name": "voice_trigger"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "settings": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Translate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate audio": {
+      "main": [
+        [
+          {
+            "node": "Send an audio file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an audio file": {
+      "main": [
+        []
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ImageTranslate",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "ImageTranslate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate": {
+      "main": [
+        [
+          {
+            "node": "Generate audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImageTranslate": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec9fe7ca-de14-4995-ae35-2b8f6564a1ee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "785b50de3b97837403db1eda6f5bf37474323db6ff6c26cf750509896c53a5c2"
+  },
+  "id": "BSTy3CLByu1TKjpY",
+  "tags": []
+}
